@@ -20,7 +20,6 @@ public class UserService {
 
     public void registerElder(String username, String phoneNumber) {
         User user = new User();
-        
         user.createElder(phoneNumber, username, "ROLE_ELDER", phoneNumber, username, passwordEncoder);
         userRepository.save(user);
     }

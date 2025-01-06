@@ -31,7 +31,12 @@ public class UserController {
 
     @PostMapping("/register/family")
     public ResponseEntity<String> registerFamily(@RequestBody FamilySignupDTO familySignupDTO) {
-        userService.registerFamily(familySignupDTO.getUsername(), familySignupDTO.getPhoneNumber(), familySignupDTO.getElderPhoneNumber());
+
+        userService.registerFamily(
+            familySignupDTO.getUsername(), 
+            familySignupDTO.getPhoneNumber(), 
+            familySignupDTO.getElderPhoneNumber()
+        );
         return ResponseEntity.ok("Family registered successfully");
     }
 }

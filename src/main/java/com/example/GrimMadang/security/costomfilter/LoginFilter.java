@@ -1,7 +1,10 @@
 package com.example.GrimMadang.security.costomfilter;
 
 
+import com.example.GrimMadang.dto.LoginRequestDTO;
 import com.example.GrimMadang.shared.utils.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,15 +37,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
-
-        System.out.println("로그인 필터 아이디 : " + username);
-
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-
+        // JSON 데이터에서 username, password, role 읽기
         try {
+            // JSON 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            LoginRequestDTO loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequestDTO.class);
+
+            String username = loginRequest.getUsername();
+            String password = loginRequest.getPassword();
+            String role = loginRequest.getRole();
+
+            // 인증 토큰 생성
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+
+            // 인증 시도
             return authenticationManager.authenticate(authRequest);
+        } catch (IOException ex) {
+            throw new AuthenticationServiceException("요청 본문에서 JSON 데이터를 읽을 수 없습니다.", ex);
         } catch (BadCredentialsException ex) {
             throw new BadCredentialsException("잘못된 자격 증명입니다. 다시 시도하세요.", ex);
         } catch (LockedException ex) {
@@ -58,6 +69,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new AuthenticationServiceException("인증 실패: " + ex.getMessage(), ex);
         }
     }
+
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
