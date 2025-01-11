@@ -46,6 +46,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             String username = loginRequest.getUsername();
             String password = loginRequest.getPassword();
             String role = loginRequest.getRole();
+            //생각해보니 백엔드 에서는 role 이 필요 없음, 어자피 데이터 베이스에서 구분됨,회원 가입 시 구분되어 데이터 베이스에 있기에 필요없음
+            //다만 중요한건 지금 로직에서는 가족들도 그림을 그릴수 있는 권한이 존재 , 가족들 계정은 캔버스로 못가도록 잘막아야할듯 
+
 
             // 인증 토큰 생성
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
@@ -86,6 +89,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 생성
         String token = jwtTokenProvider.createToken(authResult.getName(), roles);
 
+        System.out.println("토큰 : " + authResult.getName());
+
         // JWT를 쿠키에 저장
         Cookie cookie = new Cookie("jwt", token);
         cookie.setHttpOnly(true); // 보안상 true로 설정하는 것이 좋음
@@ -98,7 +103,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 인증 성공 시의 로직
        response.getWriter().write("{\"message\":\"Credential Authentication Success\", " +
-               "\"user\":\"" + obtainUsername(request) + "\"}");
+               "\"user\":\"" + authResult.getName() + "\"}");
     }
 
     @Override

@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -26,9 +29,9 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return  new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -43,35 +46,36 @@ public class SecurityConfig {
     private CustomOidcLogoutSuccessHandler customOidcLogoutSuccessHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthenticationConfiguration authenticationConfiguration,
+            JwtTokenProvider jwtTokenProvider,
+            UserDetailsService userDetailsService,
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
 
         AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
         LoginFilter elderLoginFilter = new LoginFilter(authenticationManager, jwtTokenProvider);
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtTokenProvider, userDetailsService);
-        CustomOauthSuccessHandler customOauthSuccessHandler = new CustomOauthSuccessHandler(userDetailsService,jwtTokenProvider);
+        CustomOauthSuccessHandler customOauthSuccessHandler = new CustomOauthSuccessHandler(userDetailsService, jwtTokenProvider);
 
         http
                 .securityMatcher("/**")
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // 세션을 사용하지 않음
-                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 사용하지 않음
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/users/register/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/login**", "/error**").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // .formLogin(formLogin -> formLogin
-                //         .loginPage("/users/login") // 사용자 정의 로그인 페이지 경로
-                //         .permitAll() // 로그인 페이지는 모두 접근 가능
-                // )
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
+                        .logoutSuccessHandler(customOidcLogoutSuccessHandler)
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                        .deleteCookies("jwt")
+                        .deleteCookies("JSESSIONID", "jwt")
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -79,19 +83,9 @@ public class SecurityConfig {
                         .failureHandler(customOauthFailureHandler())  // 로그인 실패 시 처리
                         .permitAll()
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .logoutSuccessHandler(customOidcLogoutSuccessHandler)
-                        .invalidateHttpSession(true)      // 세션 무효화
-                        .clearAuthentication(true)        // 인증 정보 지우기
-                        .deleteCookies("JSESSIONID")      // JSESSIONID 쿠키 삭제
-                        .deleteCookies("jwt")             // JWT 쿠키 삭제
-                        .permitAll()                      // 모든 사용자에게 로그아웃 URL 허용
-                )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)  // 인증 실패 시 처리
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 처리
                 );
-
 
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(elderLoginFilter, UsernamePasswordAuthenticationFilter.class);
@@ -99,4 +93,16 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:5173"); // 허용할 Origin
+        configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
+        configuration.addAllowedHeader("*"); // 모든 헤더 허용
+        configuration.setAllowCredentials(true); // 쿠키 허용
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 설정 적용
+        return source;
+    }
 }

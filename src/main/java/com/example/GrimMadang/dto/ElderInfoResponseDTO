@@ -1,0 +1,15 @@
+package com.example.GrimMadang.dto;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class ElderInfoResponseDTO {
+    private String name;
+    private String phoneNumber;
+    private String role;
+    private String attendance_streak;
+    private String attendance_total;
+
+}
