@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ElderInfoResponseDTO {
-    private String elderid;
+    private String elderId;
     private String name;
     private String phoneNumber;
     private String role;
