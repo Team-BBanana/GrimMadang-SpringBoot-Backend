@@ -97,7 +97,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setSecure(false);    // HTTPS에서만 사용하도록 설정하려면 true로 설정
         cookie.setPath("/");
         response.addCookie(cookie);
-
+        cookie.setDomain("");
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK); // 302 OK
 

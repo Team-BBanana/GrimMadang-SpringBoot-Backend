@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 import com.example.GrimMadang.domain.drawings.feedback.Feedback;
 import com.example.GrimMadang.domain.user.User;
 import com.example.GrimMadang.domain.user.UserRepository;
+import com.example.GrimMadang.dto.MetaDataRequestDTO;
 import com.example.GrimMadang.shared.utils.JwtTokenProvider;
 import com.example.GrimMadang.domain.drawings.feedback.FeedbackRepository;
 import com.example.GrimMadang.domain.drawings.comment.Comment;
 import com.example.GrimMadang.domain.drawings.comment.CommentRepository;
+import com.example.GrimMadang.domain.drawings.metadata.MetaData;
+import com.example.GrimMadang.domain.drawings.metadata.MetaDataRepository;
+
 
 @Service
 public class DrawingService {
@@ -23,6 +27,7 @@ public class DrawingService {
     private final FeedbackRepository feedbackRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final CommentRepository commentRepository;
+    private final MetaDataRepository metaDataRepository;
 
     @Autowired
     public DrawingService(
@@ -30,12 +35,14 @@ public class DrawingService {
             UserRepository userRepository,
             FeedbackRepository feedbackRepository,
             JwtTokenProvider jwtTokenProvider,
-            CommentRepository commentRepository) {
+            CommentRepository commentRepository,
+            MetaDataRepository metaDataRepository) {
         this.drawingRepository = drawingRepository;
         this.userRepository = userRepository;
         this.feedbackRepository = feedbackRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.commentRepository = commentRepository;
+        this.metaDataRepository = metaDataRepository;
     }
 
     public void saveDrawing(String token, String title, String imageUrl1, String imageUrl2, 
@@ -244,4 +251,27 @@ public class DrawingService {
             throw new RuntimeException("코멘트 목록 조회에 실패했습니다: " + e.getMessage(), e);
         }
     }
+
+    public void saveMetaData(MetaDataRequestDTO metaDataRequestDTO) {
+        try {
+            MetaData metaData = new MetaData();
+            metaData.setTopicName(metaDataRequestDTO.getTopicName());
+            metaData.setDescription(metaDataRequestDTO.getDescription());
+            metaDataRepository.save(metaData);
+        } catch (Exception e) {
+            throw new RuntimeException("메타데이터 저장에 실패했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    public MetaData getMetaDataByTopic(String topicName) {
+        try {
+
+            return metaDataRepository.findByTopicName(topicName);
+            
+        } catch (Exception e) {
+
+            throw new RuntimeException("메타데이터 조회에 실패했습니다: " + e.getMessage(), e);
+        }
+    }
+
 }
