@@ -7,16 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.GrimMadang.domain.drawings.comment.Comment;
 import com.example.GrimMadang.domain.drawings.feedback.Feedback;
-import com.example.GrimMadang.domain.drawings.metadata.MetaData;
 import com.example.GrimMadang.dto.DrawingRequestDTO;
-import com.example.GrimMadang.dto.MetaDataRequestDTO;
 import com.example.GrimMadang.dto.CommentRequestDTO;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/drawings")
-@CrossOrigin(origins = "http://localhost:5173")
 public class DrawingController {
 
     private final DrawingService drawingService;
@@ -127,9 +124,4 @@ public class DrawingController {
                 .body("서버 오류가 발생했습니다: " + e.getMessage());
         }
     }
-
-
-
-
-    
 }
