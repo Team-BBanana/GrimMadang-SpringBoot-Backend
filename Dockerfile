@@ -21,4 +21,5 @@ RUN apt-get update && apt-get install -y gettext-base
 EXPOSE 8080
 
 # Run the application with environment variables, using envsubst to replace variables in the .env file
-ENTRYPOINT ["sh", "-c", "export $(cat .env | xargs) && java -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "export $(cat .env | envsubst) && java -jar app.jar"]
+
