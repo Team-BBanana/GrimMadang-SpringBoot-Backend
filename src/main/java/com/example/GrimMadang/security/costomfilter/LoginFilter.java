@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,6 +22,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+
+    @Value("${CORS_DOMAIN}")
+    private String cors_domain;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -100,6 +105,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setDomain("");
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK); // 302 OK
+
+        // CORS 헤더 추가
+        response.setHeader("Access-Control-Allow-Origin", cors_domain);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "*");
 
         // 인증 성공 시의 로직
        response.getWriter().write("{\"message\":\"Credential Authentication Success\", " +

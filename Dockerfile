@@ -11,14 +11,8 @@ WORKDIR /app
 # Copy the built jar from build stage
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Copy .env file
-COPY .env .env
-
 # Install gettext-base for envsubst
 RUN apt-get update && apt-get install -y gettext-base
-
-# Set environment variables from .env file
-ENV $(cat .env | xargs)
 
 # Expose port
 EXPOSE 8080
