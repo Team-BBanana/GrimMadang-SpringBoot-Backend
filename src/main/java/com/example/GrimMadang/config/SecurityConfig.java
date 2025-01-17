@@ -104,6 +104,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("http://grim-madang.store"));
         configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Authorization");
