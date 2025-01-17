@@ -69,14 +69,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
 
                 //배포시 주석 처리 -> 시큐리티,웹 콘피그,프로퍼타이즈 주석 처리
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:4173"));
-                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(Arrays.asList("*"));
-                    config.setAllowCredentials(true);  // credentials 허용
-                    return config;
-                }))
+                // .cors(cors -> cors.configurationSource(request -> {
+                //     CorsConfiguration config = new CorsConfiguration();
+                //     config.setAllowedOrigins(Collections.singletonList("http://localhost:4173"));
+                //     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                //     config.setAllowedHeaders(Arrays.asList("*"));
+                //     config.setAllowCredentials(true);  // credentials 허용
+                //     return config;
+                // }))
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()

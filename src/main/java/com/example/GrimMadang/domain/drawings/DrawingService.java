@@ -45,7 +45,7 @@ public class DrawingService {
         this.metaDataRepository = metaDataRepository;
     }
 
-    public void saveDrawing(String token, String title, String imageUrl1, String imageUrl2, 
+    public String saveDrawing(String token, String title, String imageUrl1, String imageUrl2, 
             String description, String feedback1, String feedback2) {
         try {
             String phoneNumber = jwtTokenProvider.getUsername(token);
@@ -64,6 +64,9 @@ public class DrawingService {
             Feedback feedback = new Feedback();
             feedback.createFeedback(drawing, feedback1, feedback2);
             feedbackRepository.save(feedback);
+
+            return drawing.getId().toString();
+
 
         } catch (Exception e) {
             throw new RuntimeException("그림 저장에 실패했습니다: " + e.getMessage(), e);

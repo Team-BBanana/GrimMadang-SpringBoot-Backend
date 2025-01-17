@@ -28,7 +28,7 @@ public class DrawingController {
             @CookieValue(value = "jwt", required = false) String token,
             @RequestBody DrawingRequestDTO drawingRequestDTO) {
         try {
-            drawingService.saveDrawing(
+            String drawingId = drawingService.saveDrawing(
                 token,
                 drawingRequestDTO.getTitle(),
                 drawingRequestDTO.getImageUrl1(),
@@ -37,7 +37,7 @@ public class DrawingController {
                 drawingRequestDTO.getFeedback1(),
                 drawingRequestDTO.getFeedback2()
             );
-            return ResponseEntity.ok("그림이 성공적으로 저장되었습니다.");
+            return ResponseEntity.ok(drawingId);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
