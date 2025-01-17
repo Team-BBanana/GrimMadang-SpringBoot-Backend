@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 사용하지 않음
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
 
-                //배포시 주석 처리
+                //배포시 주석 처리 -> 시큐리티,웹 콘피그,프로퍼타이즈 주석 처리
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(Collections.singletonList("http://localhost:4173"));
