@@ -102,7 +102,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://grim-madang.store"));
+        configuration.setAllowedOrigins(Collections.singletonList("htts://grim-madang.store"));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("*");
