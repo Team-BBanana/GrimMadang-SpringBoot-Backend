@@ -21,7 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.beans.factory.annotation.Value;
-import java.util.List;
 
 
 @Configuration
@@ -31,9 +30,6 @@ public class SecurityConfig {
 
     @Value("${CORS_DOMAIN}")
     private String cors_domain;
-
-    @Value("#{'${spring.mvc.cors.allowed-origins}'.split(',')}")
-    private List<String> allowedOrigins;
 
 
     @Bean
@@ -105,18 +101,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 허용할 Origin 설정
-        allowedOrigins.forEach(configuration::addAllowedOrigin);
-        
-        // 기타 CORS 설정
+        configuration.addAllowedOrigin(cors_domain);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
-        
+        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("Set-Cookie");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
         return source;
     }
 }
