@@ -10,11 +10,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://grim-madang.store")
-                .allowedMethods("*")
+                .allowedOrigins("http://grim-madang.store") // 허용할 도메인
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
-                .exposedHeaders("Authorization", "Set-Cookie");
+                .allowCredentials(true);
     }
 } 
 //hacked by DongInLee
