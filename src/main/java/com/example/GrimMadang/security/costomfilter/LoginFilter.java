@@ -102,6 +102,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK); // 302 OK
 
+        // Add custom security headers
+        response.addHeader("X-Content-Type-Options", "nosniff");
+        response.addHeader("X-Frame-Options", "DENY");
+        response.addHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+
         // 인증 성공 시의 로직
         response.getWriter().write("{\"message\":\"Credential Authentication Success\", " +
                 "\"user\":\"" + authResult.getName() + "\"}");
@@ -116,6 +121,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 401 Unauthorized 상태 코드 설정
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        // Add custom security headers
+        response.addHeader("X-Content-Type-Options", "nosniff");
+        response.addHeader("X-Frame-Options", "DENY");
+        response.addHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
         // 예외 메시지 처리
         String errorMessage;
